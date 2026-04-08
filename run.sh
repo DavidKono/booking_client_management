@@ -1,0 +1,17 @@
+python3 -m venv venv
+source venv/bin/activate
+
+pip3 install -r reqs.txt
+
+python3 -m grpc_tools.protoc -I. \
+  --python_out=. \
+  --grpc_python_out=. \
+  booking.proto
+
+python3 client_management_service.py &
+python3 client.py &
+
+
+
+
+

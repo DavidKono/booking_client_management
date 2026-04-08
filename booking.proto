@@ -1,0 +1,23 @@
+syntax = "proto3";
+package booking;
+
+service ClientManager {
+  rpc SubmitBooking (BookingRequest) returns (BookingReply);
+}
+
+service Scheduler {
+  rpc RequestJourney (BookingRequest) returns (BookingReply);
+}
+
+message BookingRequest {
+  string username = 1;
+  string origin = 2;
+  string destination = 3;
+  string departure_time = 4;
+}
+
+message BookingReply {
+  bool accepted = 1;
+  string booking_id = 2;
+  string message = 3;
+}

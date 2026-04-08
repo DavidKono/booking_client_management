@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Vehicle Booking</title>
+  <style>
+    body {
+      max-width: 700px;
+      margin: auto;
+    }
+
+    form {
+      display: grid;
+      gap: 12px;
+    }
+
+    .result {
+      border-radius: 8px;
+      background: #f8f8f8;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Client</h1>
+
+  <form id="bookingForm">
+    <label>
+      Username
+      <input type="text" id="username" required />
+    </label>
+
+    <label>
+      Origin
+      <input type="text" id="origin" required />
+    </label>
+
+    <label>
+      Destination
+      <input type="text" id="destination" required />
+    </label>
+
+    <label>
+      Departure Time
+      <input type="text" id="departure_time" value="5PM 01/01/2026" required />
+    </label>
+
+    <button type="submit">Submit Booking</button>
+  </form>
+
+  <div id="result" class="result" style="display:none;"></div>
+
+  <script>
+    const form = document.getElementById("bookingForm");
+    const resultDiv = document.getElementById("result");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const payload = {
+        username: document.getElementById("username").value,
+        origin: document.getElementById("origin").value,
+        destination: document.getElementById("destination").value,
+        departure_time: document.getElementById("departure_time").value
+      };
+
+      resultDiv.style.display = "block";
+      resultDiv.className = "result";
+      resultDiv.textContent = "Submitting...";
+
+      try {
+        const response = await fetch("http://127.0.0.1:8000/submit-booking", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        resultDiv.textContent =
+          `Accepted: ${data.accepted}\n` +
+          `Booking ID: ${data.booking_id}\n` +
+          `Message: ${data.message}`;
+      } catch (error) {
+        resultDiv.className = "result error";
+        resultDiv.textContent = `Request failed: ${error}`;
+      }
+    });
+  </script>
+</body>
+</html>
