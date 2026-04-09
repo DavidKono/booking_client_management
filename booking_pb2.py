@@ -24,19 +24,21 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rbooking.proto\x12\x07\x62ooking\"_\n\x0e\x42ookingRequest\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x0e\n\x06origin\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65stination\x18\x03 \x01(\t\x12\x16\n\x0e\x64\x65parture_time\x18\x04 \x01(\t\"E\n\x0c\x42ookingReply\x12\x10\n\x08\x61\x63\x63\x65pted\x18\x01 \x01(\x08\x12\x12\n\nbooking_id\x18\x02 \x01(\t\x12\x0f\n\x07message\x18\x03 \x01(\t2P\n\rClientManager\x12?\n\rSubmitBooking\x12\x17.booking.BookingRequest\x1a\x15.booking.BookingReply2M\n\tScheduler\x12@\n\x0eRequestJourney\x12\x17.booking.BookingRequest\x1a\x15.booking.BookingReplyb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rbooking.proto\x12\x07\x62ooking\"\xc8\x01\n\x14\x43reateBookingRequest\x12\x11\n\tdriver_id\x18\x01 \x01(\t\x12\x12\n\nvehicle_id\x18\x02 \x01(\t\x12\x16\n\x0eorigin_node_id\x18\x03 \x01(\x03\x12\x1b\n\x13\x64\x65stination_node_id\x18\x04 \x01(\x03\x12\x1b\n\x13\x64\x65parture_time_unix\x18\x05 \x01(\x03\x12\x1c\n\x14\x65stimated_duration_s\x18\x06 \x01(\x05\x12\x19\n\x11jurisdiction_code\x18\x07 \x01(\t\"\xd7\x02\n\x12GetBookingResponse\x12\x12\n\nbooking_id\x18\x01 \x01(\t\x12\x11\n\tdriver_id\x18\x02 \x01(\t\x12\x12\n\nvehicle_id\x18\x03 \x01(\t\x12\x16\n\x0eorigin_node_id\x18\x04 \x01(\x03\x12\x1b\n\x13\x64\x65stination_node_id\x18\x05 \x01(\x03\x12\x1b\n\x13\x64\x65parture_time_unix\x18\x06 \x01(\x03\x12\x1c\n\x14\x65stimated_duration_s\x18\x07 \x01(\x05\x12&\n\x06status\x18\x08 \x01(\x0e\x32\x16.booking.BookingStatus\x12\x19\n\x11jurisdiction_code\x18\t \x01(\t\x12\x10\n\x08route_id\x18\n \x01(\t\x12\x17\n\x0f\x63reated_at_unix\x18\x0b \x01(\x03\x12\x17\n\x0f\x65xpires_at_unix\x18\x0c \x01(\x03\x12\x0f\n\x07version\x18\r \x01(\x05*n\n\rBookingStatus\x12\x0b\n\x07PENDING\x10\x00\x12\r\n\tCONFIRMED\x10\x01\x12\n\n\x06\x41\x43TIVE\x10\x02\x12\r\n\tCOMPLETED\x10\x03\x12\r\n\tCANCELLED\x10\x04\x12\n\n\x06\x44\x45NIED\x10\x05\x12\x0b\n\x07\x45XPIRED\x10\x06\x32\\\n\rClientManager\x12K\n\rSubmitBooking\x12\x1d.booking.CreateBookingRequest\x1a\x1b.booking.GetBookingResponse2Y\n\tScheduler\x12L\n\x0eRequestJourney\x12\x1d.booking.CreateBookingRequest\x1a\x1b.booking.GetBookingResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'booking_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_BOOKINGREQUEST']._serialized_start=26
-  _globals['_BOOKINGREQUEST']._serialized_end=121
-  _globals['_BOOKINGREPLY']._serialized_start=123
-  _globals['_BOOKINGREPLY']._serialized_end=192
-  _globals['_CLIENTMANAGER']._serialized_start=194
-  _globals['_CLIENTMANAGER']._serialized_end=274
-  _globals['_SCHEDULER']._serialized_start=276
-  _globals['_SCHEDULER']._serialized_end=353
+  _globals['_BOOKINGSTATUS']._serialized_start=575
+  _globals['_BOOKINGSTATUS']._serialized_end=685
+  _globals['_CREATEBOOKINGREQUEST']._serialized_start=27
+  _globals['_CREATEBOOKINGREQUEST']._serialized_end=227
+  _globals['_GETBOOKINGRESPONSE']._serialized_start=230
+  _globals['_GETBOOKINGRESPONSE']._serialized_end=573
+  _globals['_CLIENTMANAGER']._serialized_start=687
+  _globals['_CLIENTMANAGER']._serialized_end=779
+  _globals['_SCHEDULER']._serialized_start=781
+  _globals['_SCHEDULER']._serialized_end=870
 # @@protoc_insertion_point(module_scope)

@@ -1,24 +1,31 @@
 from concurrent import futures
+import time
 import grpc
 
 import booking_pb2
 import booking_pb2_grpc
 
+
 class ClientManagerServicer(booking_pb2_grpc.ClientManagerServicer):
     def SubmitBooking(self, request, context):
-        print("Received booking request:")
-        print(f"    username: {request.username}")
-        print(f"    origin: {request.origin}")
-        print(f"    destination: {request.destination}")
-        print(f"    departure_time: {request.departure_time}")
+        now_unix = int(time.time())
+        expires_at_unix = now_unix + 300  # mocked expiry in 5 mins
+        booking_id = "1000"  # mocked id
 
-        # mock id
-        booking_id = str(1000)
-
-        return booking_pb2.BookingReply(
-            accepted=True,
+        return booking_pb2.GetBookingResponse(
             booking_id=booking_id,
-            message=f"Booking accepted for {request.username}"
+            driver_id=request.driver_id,
+            vehicle_id=request.vehicle_id,
+            origin_node_id=request.origin_node_id,
+            destination_node_id=request.destination_node_id,
+            departure_time_unix=request.departure_time_unix,
+            estimated_duration_s=request.estimated_duration_s,
+            status=booking_pb2.CONFIRMED,
+            jurisdiction_code=request.jurisdiction_code,
+            route_id="",
+            created_at_unix=now_unix,
+            expires_at_unix=expires_at_unix,
+            version=1,
         )
 
 

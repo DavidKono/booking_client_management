@@ -36,8 +36,8 @@ class ClientManagerStub(object):
         """
         self.SubmitBooking = channel.unary_unary(
                 '/booking.ClientManager/SubmitBooking',
-                request_serializer=booking__pb2.BookingRequest.SerializeToString,
-                response_deserializer=booking__pb2.BookingReply.FromString,
+                request_serializer=booking__pb2.CreateBookingRequest.SerializeToString,
+                response_deserializer=booking__pb2.GetBookingResponse.FromString,
                 _registered_method=True)
 
 
@@ -55,8 +55,8 @@ def add_ClientManagerServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'SubmitBooking': grpc.unary_unary_rpc_method_handler(
                     servicer.SubmitBooking,
-                    request_deserializer=booking__pb2.BookingRequest.FromString,
-                    response_serializer=booking__pb2.BookingReply.SerializeToString,
+                    request_deserializer=booking__pb2.CreateBookingRequest.FromString,
+                    response_serializer=booking__pb2.GetBookingResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -84,8 +84,8 @@ class ClientManager(object):
             request,
             target,
             '/booking.ClientManager/SubmitBooking',
-            booking__pb2.BookingRequest.SerializeToString,
-            booking__pb2.BookingReply.FromString,
+            booking__pb2.CreateBookingRequest.SerializeToString,
+            booking__pb2.GetBookingResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -108,8 +108,8 @@ class SchedulerStub(object):
         """
         self.RequestJourney = channel.unary_unary(
                 '/booking.Scheduler/RequestJourney',
-                request_serializer=booking__pb2.BookingRequest.SerializeToString,
-                response_deserializer=booking__pb2.BookingReply.FromString,
+                request_serializer=booking__pb2.CreateBookingRequest.SerializeToString,
+                response_deserializer=booking__pb2.GetBookingResponse.FromString,
                 _registered_method=True)
 
 
@@ -127,8 +127,8 @@ def add_SchedulerServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'RequestJourney': grpc.unary_unary_rpc_method_handler(
                     servicer.RequestJourney,
-                    request_deserializer=booking__pb2.BookingRequest.FromString,
-                    response_serializer=booking__pb2.BookingReply.SerializeToString,
+                    request_deserializer=booking__pb2.CreateBookingRequest.FromString,
+                    response_serializer=booking__pb2.GetBookingResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -156,8 +156,8 @@ class Scheduler(object):
             request,
             target,
             '/booking.Scheduler/RequestJourney',
-            booking__pb2.BookingRequest.SerializeToString,
-            booking__pb2.BookingReply.FromString,
+            booking__pb2.CreateBookingRequest.SerializeToString,
+            booking__pb2.GetBookingResponse.FromString,
             options,
             channel_credentials,
             insecure,

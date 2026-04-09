@@ -17,6 +17,17 @@
       border-radius: 8px;
       background: #f8f8f8;
       white-space: pre-wrap;
+      display: none;
+    }
+
+    .success {
+      background: #eefaf0;
+      border-color: #9ed7aa;
+    }
+
+    .error {
+      background: #fff1f1;
+      border-color: #e0a4a4;
     }
   </style>
 </head>
@@ -26,42 +37,65 @@
 
   <form id="bookingForm">
     <label>
-      Username
-      <input type="text" id="username" required />
+      Driver ID
+      <input type="text" id="driver_id" name="driver_id" value="A" required />
     </label>
 
     <label>
-      Origin
-      <input type="text" id="origin" required />
+      Vehicle ID
+      <input type="text" id="vehicle_id" name="vehicle_id" value="B" required />
     </label>
 
     <label>
-      Destination
-      <input type="text" id="destination" required />
+      Origin ID
+      <input type="number" id="origin_node_id" name="origin_node_id" value="1" required />
+    </label>
+
+    <label>
+      Destination ID
+      <input type="number" id="destination_node_id" name="destination_node_id" value="2" required />
     </label>
 
     <label>
       Departure Time
-      <input type="text" id="departure_time" value="5PM 01/01/2026" required />
+      <input type="number" id="departure_time_unix" name="departure_time_unix" value="1712588400" required />
+    </label>
+
+    <label>
+      Estimated Duration (seconds)
+      <input type="number" id="estimated_duration_s" name="estimated_duration_s" value="1800" required />
+    </label>
+
+    <label>
+      Jurisdiction Code
+      <input type="text" id="jurisdiction_code" name="jurisdiction_code" value="IE" required />
     </label>
 
     <button type="submit">Submit Booking</button>
   </form>
 
-  <div id="result" class="result" style="display:none;"></div>
+  <div id="result" class="result"></div>
 
   <script>
     const form = document.getElementById("bookingForm");
     const resultDiv = document.getElementById("result");
 
+    function formatUnix(ts) {
+      if (!ts) return "";
+      return new Date(ts * 1000).toLocaleString();
+    }
+
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
 
       const payload = {
-        username: document.getElementById("username").value,
-        origin: document.getElementById("origin").value,
-        destination: document.getElementById("destination").value,
-        departure_time: document.getElementById("departure_time").value
+        driver_id: document.getElementById("driver_id").value,
+        vehicle_id: document.getElementById("vehicle_id").value,
+        origin_node_id: Number(document.getElementById("origin_node_id").value),
+        destination_node_id: Number(document.getElementById("destination_node_id").value),
+        departure_time_unix: Number(document.getElementById("departure_time_unix").value),
+        estimated_duration_s: Number(document.getElementById("estimated_duration_s").value),
+        jurisdiction_code: document.getElementById("jurisdiction_code").value
       };
 
       resultDiv.style.display = "block";
@@ -79,10 +113,36 @@
 
         const data = await response.json();
 
+        if (!response.ok || data.status === "ERROR") {
+          resultDiv.className = "result error";
+          resultDiv.textContent =
+            `Request failed\n` +
+            `Booking ID: ${data.booking_id || ""}\n` +
+            `Driver ID: ${data.driver_id || ""}\n` +
+            `Vehicle ID: ${data.vehicle_id || ""}\n` +
+            `Status: ${data.status || ""}\n` +
+            `Message: ${data.message || "Unknown error"}`;
+          return;
+        }
+
+        resultDiv.className = "result success";
         resultDiv.textContent =
-          `Accepted: ${data.accepted}\n` +
+          `Status: ${data.status}\n` +
           `Booking ID: ${data.booking_id}\n` +
-          `Message: ${data.message}`;
+          `Driver ID: ${data.driver_id}\n` +
+          `Vehicle ID: ${data.vehicle_id}\n` +
+          `Origin Node ID: ${data.origin_node_id}\n` +
+          `Destination Node ID: ${data.destination_node_id}\n` +
+          `Departure Time (Unix): ${data.departure_time_unix}\n` +
+          `Departure Time (Local): ${formatUnix(data.departure_time_unix)}\n` +
+          `Estimated Duration (s): ${data.estimated_duration_s}\n` +
+          `Jurisdiction Code: ${data.jurisdiction_code}\n` +
+          `Route ID: ${data.route_id || "(not assigned)"}\n` +
+          `Created At (Unix): ${data.created_at_unix}\n` +
+          `Created At (Local): ${formatUnix(data.created_at_unix)}\n` +
+          `Expires At (Unix): ${data.expires_at_unix}\n` +
+          `Expires At (Local): ${formatUnix(data.expires_at_unix)}\n` +
+          `Version: ${data.version}`;
       } catch (error) {
         resultDiv.className = "result error";
         resultDiv.textContent = `Request failed: ${error}`;

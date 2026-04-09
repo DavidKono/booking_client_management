@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
-from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import grpc
 import webbrowser
@@ -15,13 +14,17 @@ GRPC_SERVER_ADDRESS = "localhost:10000"
 
 app = FastAPI(title="Booking Client API")
 
-class BookingInput(BaseModel):
-    username: str
-    origin: str
-    destination: str
-    departure_time: str
 
-# serve index.html
+class BookingInput(BaseModel):
+    driver_id: str
+    vehicle_id: str
+    origin_node_id: int
+    destination_node_id: int
+    departure_time_unix: int
+    estimated_duration_s: int
+    jurisdiction_code: str
+
+
 @app.get("/")
 def serve_index():
     return FileResponse("index.html")
@@ -34,35 +37,72 @@ def submit_booking(data: BookingInput):
             stub = booking_pb2_grpc.ClientManagerStub(channel)
 
             response = stub.SubmitBooking(
-                booking_pb2.BookingRequest(
-                    username=data.username,
-                    origin=data.origin,
-                    destination=data.destination,
-                    departure_time=data.departure_time,
+                booking_pb2.CreateBookingRequest(
+                    driver_id=data.driver_id,
+                    vehicle_id=data.vehicle_id,
+                    origin_node_id=data.origin_node_id,
+                    destination_node_id=data.destination_node_id,
+                    departure_time_unix=data.departure_time_unix,
+                    estimated_duration_s=data.estimated_duration_s,
+                    jurisdiction_code=data.jurisdiction_code,
                 )
             )
 
         return {
-            "accepted": response.accepted,
             "booking_id": response.booking_id,
-            "message": response.message,
+            "driver_id": response.driver_id,
+            "vehicle_id": response.vehicle_id,
+            "origin_node_id": response.origin_node_id,
+            "destination_node_id": response.destination_node_id,
+            "departure_time_unix": response.departure_time_unix,
+            "estimated_duration_s": response.estimated_duration_s,
+            "status": booking_pb2.BookingStatus.Name(response.status),
+            "jurisdiction_code": response.jurisdiction_code,
+            "route_id": response.route_id,
+            "created_at_unix": response.created_at_unix,
+            "expires_at_unix": response.expires_at_unix,
+            "version": response.version,
         }
 
     except grpc.RpcError as e:
         return {
-            "accepted": False,
             "booking_id": "",
+            "driver_id": data.driver_id,
+            "vehicle_id": data.vehicle_id,
+            "origin_node_id": data.origin_node_id,
+            "destination_node_id": data.destination_node_id,
+            "departure_time_unix": data.departure_time_unix,
+            "estimated_duration_s": data.estimated_duration_s,
+            "status": "ERROR",
+            "jurisdiction_code": data.jurisdiction_code,
+            "route_id": "",
+            "created_at_unix": 0,
+            "expires_at_unix": 0,
+            "version": 0,
             "message": f"gRPC error: {e}",
         }
+
     except Exception as e:
         return {
-            "accepted": False,
             "booking_id": "",
+            "driver_id": data.driver_id,
+            "vehicle_id": data.vehicle_id,
+            "origin_node_id": data.origin_node_id,
+            "destination_node_id": data.destination_node_id,
+            "departure_time_unix": data.departure_time_unix,
+            "estimated_duration_s": data.estimated_duration_s,
+            "status": "ERROR",
+            "jurisdiction_code": data.jurisdiction_code,
+            "route_id": "",
+            "created_at_unix": 0,
+            "expires_at_unix": 0,
+            "version": 0,
             "message": f"Unexpected error: {e}",
         }
 
+
 def open_browser():
-    time.sleep(1) 
+    time.sleep(1)
     webbrowser.open("http://127.0.0.1:8000")
 
 

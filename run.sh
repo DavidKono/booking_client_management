@@ -9,9 +9,10 @@ python3 -m grpc_tools.protoc -I. \
   booking.proto
 
 python3 client_management_service.py &
+PID1=$!
 python3 client.py &
+PID2=$!
 
-
-
-
-
+# properly kill server
+trap "kill $PID1 $PID2; exit" INT
+wait

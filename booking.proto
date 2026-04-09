@@ -2,22 +2,45 @@ syntax = "proto3";
 package booking;
 
 service ClientManager {
-  rpc SubmitBooking (BookingRequest) returns (BookingReply);
+  rpc SubmitBooking (CreateBookingRequest) returns (GetBookingResponse);
 }
 
 service Scheduler {
-  rpc RequestJourney (BookingRequest) returns (BookingReply);
+  rpc RequestJourney (CreateBookingRequest) returns (GetBookingResponse);
 }
 
-message BookingRequest {
-  string username = 1;
-  string origin = 2;
-  string destination = 3;
-  string departure_time = 4;
+message CreateBookingRequest {
+  string driver_id            = 1;
+  string vehicle_id           = 2;
+  int64  origin_node_id       = 3;
+  int64  destination_node_id  = 4;
+  int64  departure_time_unix  = 5;
+  int32  estimated_duration_s = 6;
+  string jurisdiction_code    = 7;
 }
 
-message BookingReply {
-  bool accepted = 1;
-  string booking_id = 2;
-  string message = 3;
+enum BookingStatus {
+  PENDING   = 0;
+  CONFIRMED  = 1;
+  ACTIVE    = 2;
+  COMPLETED = 3;
+  CANCELLED = 4;
+  DENIED    = 5;
+  EXPIRED   = 6;
+}
+
+message GetBookingResponse {
+  string   booking_id           = 1;
+  string   driver_id            = 2;
+  string   vehicle_id           = 3;
+  int64    origin_node_id       = 4;
+  int64    destination_node_id  = 5;
+  int64    departure_time_unix  = 6;
+  int32    estimated_duration_s = 7;
+  BookingStatus status          = 8;
+  string   jurisdiction_code    = 9;
+  string   route_id             = 10;  // empty string if not yet assigned
+  int64    created_at_unix      = 11;
+  int64    expires_at_unix      = 12;
+  int32    version              = 13;
 }
