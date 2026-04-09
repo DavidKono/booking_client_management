@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package scheduler;
+
+service SchedulerService {
+    rpc CreateBooking (CreateBookingRequest) returns (CreateBookingResponse);
+    rpc CancelBooking (CancelBookingRequest) returns (CancelBookingResponse);
+    rpc GetBooking (GetBookingRequest) returns (GetBookingResponse);
+    rpc GetVehicleBookings (GetVehicleBookingsRequest) returns (GetVehicleBookingsResponse);
+}
+
+enum BookingStatus {
+  PENDING   = 0;
+  CONFIRMED  = 1;
+  ACTIVE    = 2;
+  COMPLETED = 3;
+  CANCELLED = 4;
+  DENIED    = 5;
+  EXPIRED   = 6;
+}
+
+message GetBookingResponse {
+  string   booking_id           = 1;
+  string   driver_id            = 2;
+  string   vehicle_id           = 3;
+  int64    origin_node_id       = 4;
+  int64    destination_node_id  = 5;
+  int64    departure_time_unix  = 6;
+  int32    estimated_duration_s = 7;
+  BookingStatus status          = 8;
+  string   jurisdiction_code    = 9;
+  string   route_id             = 10;  // empty string if not yet assigned
+  int64    created_at_unix      = 11;
+  int64    expires_at_unix      = 12;
+  int32    version              = 13;
+}
+
+// ---------------------------------------------------------------
+// request / response pairs
+// ---------------------------------------------------------------
+
+message CreateBookingRequest {
+  string driver_id            = 1;
+  string vehicle_id           = 2;
+  int64  origin_node_id       = 3;
+  int64  destination_node_id  = 4;
+  int64  departure_time_unix  = 5;
+  int32  estimated_duration_s = 6;
+  string jurisdiction_code    = 7;
+}
+
+message CreateBookingResponse {
+  GetBookingResponse booking    = 1;
+  string          error_code = 2;  // empty on success, e.g. "VEHICLE_CONFLICT"
+  string          message    = 3;
+}
+
+message CancelBookingRequest {
+  string booking_id          = 1;
+  string requesting_driver_id = 2;
+}
+
+message CancelBookingResponse {
+  GetBookingResponse booking    = 1;
+  string          error_code = 2;
+  string          message    = 3;
+}
+
+message GetBookingRequest {
+  string booking_id = 1;
+}
+
+message GetVehicleBookingsRequest {
+  string vehicle_id = 1;
+}
+
+message GetVehicleBookingsResponse {
+  repeated GetBookingResponse bookings = 1;
+}

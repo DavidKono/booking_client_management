@@ -5,10 +5,6 @@ service ClientManager {
   rpc SubmitBooking (CreateBookingRequest) returns (GetBookingResponse);
 }
 
-service Scheduler {
-  rpc RequestJourney (CreateBookingRequest) returns (GetBookingResponse);
-}
-
 message CreateBookingRequest {
   string driver_id            = 1;
   string vehicle_id           = 2;

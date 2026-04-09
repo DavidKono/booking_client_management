@@ -4,6 +4,8 @@ import grpc
 
 import booking_pb2
 import booking_pb2_grpc
+import scheduler_pb2
+import scheduler_pb2_grpc
 
 CLIENT_MANAGEMENT_ADDR = "0.0.0.0:10000"
 SCHEDULER_ADDR = "localhost:8080"
@@ -12,11 +14,21 @@ class ClientManagerServicer(booking_pb2_grpc.ClientManagerServicer):
     def SubmitBooking(self, request, context):
         try:
             with grpc.insecure_channel(SCHEDULER_ADDR) as channel:
-                scheduler_stub = booking_pb2_grpc.SchedulerStub(channel)
+                scheduler_stub = scheduler_pb2_grpc.SchedulerServiceStub(channel)
 
-                scheduler_response = scheduler_stub.RequestJourney(request)
+                scheduler_response = scheduler_stub.CreateBooking(
+                    scheduler_pb2.CreateBookingRequest(
+                        driver_id=request.driver_id,
+                        vehicle_id=request.vehicle_id,
+                        origin_node_id=request.origin_node_id,
+                        destination_node_id=request.destination_node_id,
+                        departure_time_unix=request.departure_time_unix,
+                        estimated_duration_s=request.estimated_duration_s,
+                        jurisdiction_code=request.jurisdiction_code,
+                    )
+                )
 
-                return scheduler_response
+                return scheduler_response.booking
 
         except grpc.RpcError as e:
             context.set_code(grpc.StatusCode.UNAVAILABLE)

@@ -8,6 +8,11 @@ python3 -m grpc_tools.protoc -I. \
   --grpc_python_out=. \
   booking.proto
 
+python3 -m grpc_tools.protoc -I. \
+  --python_out=. \
+  --grpc_python_out=. \
+  scheduler.proto
+
 python3 client_management_service.py &
 PID1=$!
 python3 client.py &
