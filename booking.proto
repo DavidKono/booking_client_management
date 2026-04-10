@@ -4,6 +4,7 @@ package booking;
 service ClientManager {
   rpc SubmitBooking (CreateBookingRequest) returns (GetBookingResponse);
   rpc CancelBooking (CancelBookingRequest) returns (CancelBookingResponse);
+  rpc GetVehicleBookings (GetVehicleBookingsRequest) returns (GetVehicleBookingsResponse);
 }
 
 message CreateBookingRequest {
@@ -51,4 +52,12 @@ message CancelBookingResponse {
   GetBookingResponse booking    = 1;
   string          error_code = 2;
   string          message    = 3;
+}
+
+message GetVehicleBookingsRequest {
+  string vehicle_id = 1;
+}
+
+message GetVehicleBookingsResponse {
+  repeated GetBookingResponse bookings = 1;
 }

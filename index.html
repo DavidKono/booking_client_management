@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Vehicle Booking</title>
@@ -6,11 +7,13 @@
     body {
       max-width: 700px;
       margin: auto;
+      font-family: Arial, sans-serif;
     }
 
     form {
       display: grid;
       gap: 12px;
+      margin-bottom: 16px;
     }
 
     .result {
@@ -18,6 +21,9 @@
       background: #f8f8f8;
       white-space: pre-wrap;
       display: none;
+      padding: 12px;
+      border: 1px solid #ddd;
+      margin-bottom: 20px;
     }
 
     .success {
@@ -29,77 +35,230 @@
       background: #fff1f1;
       border-color: #e0a4a4;
     }
+
+    .booking-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      background: #fafafa;
+    }
+
+    .booking-actions {
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .cancel-btn {
+      margin-top: 8px;
+    }
+
+    .top-sections {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .column {
+      flex: 1;
+      min-width: 0;
+    }
+
   </style>
 </head>
 <body>
 
   <h1>Client</h1>
 
-  <form id="bookingForm">
-    <label>
-      Driver ID
-      <input type="text" id="driver_id" name="driver_id" value="A" required />
-    </label>
+  <div class="top-sections">
 
-    <label>
-      Vehicle ID
-      <input type="text" id="vehicle_id" name="vehicle_id" value="B" required />
-    </label>
+    <!-- LEFT: Submit Booking -->
+    <div class="column">
+      <h2>Submit Booking</h2>
 
-    <label>
-      Origin ID
-      <input type="number" id="origin_node_id" name="origin_node_id" value="1" required />
-    </label>
+      <form id="bookingForm">
+        <label>Driver ID
+          <input type="text" id="driver_id" value="A" required />
+        </label>
 
-    <label>
-      Destination ID
-      <input type="number" id="destination_node_id" name="destination_node_id" value="2" required />
-    </label>
+        <label>Vehicle ID
+          <input type="text" id="vehicle_id" value="B" required />
+        </label>
 
-    <label>
-      Departure Time
-      <input type="number" id="departure_time_unix" name="departure_time_unix" value="1712588400" required />
-    </label>
+        <label>Origin ID
+          <input type="number" id="origin_node_id" value="1" required />
+        </label>
 
-    <label>
-      Estimated Duration (seconds)
-      <input type="number" id="estimated_duration_s" name="estimated_duration_s" value="1800" required />
-    </label>
+        <label>Destination ID
+          <input type="number" id="destination_node_id" value="2" required />
+        </label>
 
-    <label>
-      Jurisdiction Code
-      <input type="text" id="jurisdiction_code" name="jurisdiction_code" value="IE" required />
-    </label>
+        <label>Departure Time
+          <input type="number" id="departure_time_unix" value="1712588400" required />
+        </label>
 
-    <button type="submit">Submit Booking</button>
-  </form>
+        <label>Estimated Duration (seconds)
+          <input type="number" id="estimated_duration_s" value="1800" required />
+        </label>
 
-  <div id="bookingResult" class="result"></div>
+        <label>Jurisdiction Code
+          <input type="text" id="jurisdiction_code" value="IE" required />
+        </label>
 
-  <form id="cancelForm">
-    <label>
-      Driver ID
-      <input type="text" id="cancel_driver_id" name="driver_id" value="A" required />
-    </label>
-   <label>
-      Booking ID
-      <input type="text" id="cancel_booking_id" name="booking_id" value="A" required />
-    </label>
+        <button type="submit">Submit Booking</button>
+      </form>
 
-    <button type="submit">Cancel Booking</button>
-  </form>
+      <div id="bookingResult" class="result"></div>
+    </div>
 
-  <div id="cancelResult" class="result"></div>
+    <!-- RIGHT: Get Vehicle Bookings -->
+    <div class="column">
+      <h2>Vehicle Bookings</h2>
+
+      <form id="vehicleBookingsForm">
+        <label>Vehicle ID
+          <input type="text" id="query_vehicle_id" value="B" required />
+        </label>
+
+        <button type="submit">Get Vehicle Bookings</button>
+      </form>
+
+      <div id="vehicleBookingsStatus" class="result"></div>
+      <div id="vehicleBookingsList"></div>
+    </div>
+
+  </div>
 
   <script>
     const bookingForm = document.getElementById("bookingForm");
-    const cancelForm = document.getElementById("cancelForm");
     const bookingResultDiv = document.getElementById("bookingResult");
-    const cancelResultDiv = document.getElementById("cancelResult");
+
+    const vehicleBookingsForm = document.getElementById("vehicleBookingsForm");
+    const vehicleBookingsStatusDiv = document.getElementById("vehicleBookingsStatus");
+    const vehicleBookingsListDiv = document.getElementById("vehicleBookingsList");
 
     function formatUnix(ts) {
       if (!ts) return "";
       return new Date(ts * 1000).toLocaleString();
+    }
+
+    async function loadVehicleBookings(vehicleId) {
+      vehicleBookingsStatusDiv.style.display = "block";
+      vehicleBookingsStatusDiv.className = "result";
+      vehicleBookingsStatusDiv.textContent = "Loading...";
+      vehicleBookingsListDiv.innerHTML = "";
+
+      try {
+        const response = await fetch("http://127.0.0.1:8000/vehicle-bookings", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ vehicle_id: vehicleId })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || data.status === "ERROR") {
+          vehicleBookingsStatusDiv.className = "result error";
+          vehicleBookingsStatusDiv.textContent =
+            `Request failed\n` +
+            `Vehicle ID: ${data.vehicle_id || ""}\n` +
+            `Message: ${data.message || "Unknown error"}`;
+          return;
+        }
+
+        if (!data.bookings || data.bookings.length === 0) {
+          vehicleBookingsStatusDiv.className = "result success";
+          vehicleBookingsStatusDiv.textContent =
+            `Vehicle ID: ${data.vehicle_id}\nNo bookings found.`;
+          return;
+        }
+
+        vehicleBookingsStatusDiv.className = "result success";
+        vehicleBookingsStatusDiv.textContent =
+          `Vehicle ID: ${data.vehicle_id}\nFound ${data.bookings.length} booking(s).`;
+
+        data.bookings.forEach((b, i) => {
+          const card = document.createElement("div");
+          card.className = "booking-card";
+
+          card.innerHTML = `
+            <strong>Booking ${i + 1}</strong><br>
+            Status: ${b.status}<br>
+            Driver ID: ${b.driver_id}<br>
+            Vehicle ID: ${b.vehicle_id}<br>
+            Origin Node ID: ${b.origin_node_id}<br>
+            Destination Node ID: ${b.destination_node_id}<br>
+            Journey Time: ${b.estimated_duration_s}<br>
+          `;
+
+          const actions = document.createElement("div");
+          actions.className = "booking-actions";
+
+          const cancelButton = document.createElement("button");
+          cancelButton.type = "button";
+          cancelButton.className = "cancel-btn";
+          cancelButton.textContent = "Cancel Booking";
+
+          cancelButton.addEventListener("click", async () => {
+            cancelButton.disabled = true;
+            cancelButton.textContent = "Cancelling...";
+
+            try {
+              const cancelResponse = await fetch("http://127.0.0.1:8000/cancel-booking", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                  driver_id: b.driver_id,
+                  booking_id: b.booking_id
+                })
+              });
+
+              const cancelData = await cancelResponse.json();
+
+              if (!cancelResponse.ok || cancelData.status === "ERROR") {
+                vehicleBookingsStatusDiv.style.display = "block";
+                vehicleBookingsStatusDiv.className = "result error";
+                vehicleBookingsStatusDiv.textContent =
+                  `Cancel failed\n` +
+                  `Booking ID: ${cancelData.booking_id || b.booking_id}\n` +
+                  `Driver ID: ${cancelData.driver_id || b.driver_id}\n` +
+                  `Message: ${cancelData.message || "Unknown error"}`;
+                cancelButton.disabled = false;
+                cancelButton.textContent = "Cancel Booking";
+                return;
+              }
+
+              vehicleBookingsStatusDiv.style.display = "block";
+              vehicleBookingsStatusDiv.className = "result success";
+              vehicleBookingsStatusDiv.textContent =
+                `Cancelled booking ${cancelData.booking_id} successfully.`;
+
+              await loadVehicleBookings(vehicleId);
+            } catch (error) {
+              vehicleBookingsStatusDiv.style.display = "block";
+              vehicleBookingsStatusDiv.className = "result error";
+              vehicleBookingsStatusDiv.textContent = `Cancel request failed: ${error}`;
+              cancelButton.disabled = false;
+              cancelButton.textContent = "Cancel Booking";
+            }
+          });
+
+          actions.appendChild(cancelButton);
+          card.appendChild(actions);
+          vehicleBookingsListDiv.appendChild(card);
+        });
+      } catch (error) {
+        vehicleBookingsStatusDiv.className = "result error";
+        vehicleBookingsStatusDiv.textContent = `Vehicle bookings request failed: ${error}`;
+      }
     }
 
     bookingForm.addEventListener("submit", async (event) => {
@@ -154,62 +313,24 @@
           `Departure Time (Local): ${formatUnix(data.departure_time_unix)}\n` +
           `Estimated Duration (s): ${data.estimated_duration_s}\n` +
           `Jurisdiction Code: ${data.jurisdiction_code}\n` +
-          `Route ID: ${data.route_id || "(not assigned)"}\n` +
           `Created At (Unix): ${data.created_at_unix}\n` +
           `Created At (Local): ${formatUnix(data.created_at_unix)}\n` +
           `Expires At (Unix): ${data.expires_at_unix}\n` +
           `Expires At (Local): ${formatUnix(data.expires_at_unix)}\n` +
           `Version: ${data.version}`;
+
+        document.getElementById("query_vehicle_id").value = data.vehicle_id;
       } catch (error) {
         bookingResultDiv.className = "result error";
-        bookingResultDiv.textContent = `Booking Request failed: ${error}`;
+        bookingResultDiv.textContent = `Booking request failed: ${error}`;
       }
     });
 
-    cancelForm.addEventListener("submit", async (event) => {
+    vehicleBookingsForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-
-      const payload = {
-        driver_id: document.getElementById("cancel_driver_id").value,
-        booking_id: document.getElementById("cancel_booking_id").value,
-      };
-
-      cancelResultDiv.style.display = "block";
-      cancelResultDiv.className = "result";
-      cancelResultDiv.textContent = "Submitting...";
-
-      try {
-        const response = await fetch("http://127.0.0.1:8000/cancel-booking", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        });
-        const data = await response.json();
-        console.log(data.status)
-        console.log(data)
-        
-        if (!response.ok || data.status === "ERROR") {
-          cancelResultDiv.className = "result error";
-          cancelResultDiv.textContent =
-            `Request failed\n` +
-            `Booking ID: ${data.booking_id || ""}\n` +
-            `Driver ID: ${data.driver_id || ""}\n` +
-            `Message: ${data.message || ""}\n`;
-          return;
-        }
-        cancelResultDiv.className = "result success";
-        cancelResultDiv.textContent =
-          `Status: ${data.status}\n` +
-          `Booking ID: ${data.booking_id}\n` +
-          `Driver ID: ${data.driver_id}\n`;
-      } catch (error) {
-        cancelResultDiv.className = "result error";
-        cancelResultDiv.textContent = `Cancel request failed: ${error}`;
-      }
+      const vehicleId = document.getElementById("query_vehicle_id").value;
+      await loadVehicleBookings(vehicleId);
     });
-  
   </script>
 </body>
 </html>

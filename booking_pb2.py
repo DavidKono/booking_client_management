@@ -24,15 +24,15 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rbooking.proto\x12\x07\x62ooking\"\xc8\x01\n\x14\x43reateBookingRequest\x12\x11\n\tdriver_id\x18\x01 \x01(\t\x12\x12\n\nvehicle_id\x18\x02 \x01(\t\x12\x16\n\x0eorigin_node_id\x18\x03 \x01(\x03\x12\x1b\n\x13\x64\x65stination_node_id\x18\x04 \x01(\x03\x12\x1b\n\x13\x64\x65parture_time_unix\x18\x05 \x01(\x03\x12\x1c\n\x14\x65stimated_duration_s\x18\x06 \x01(\x05\x12\x19\n\x11jurisdiction_code\x18\x07 \x01(\t\"\xd7\x02\n\x12GetBookingResponse\x12\x12\n\nbooking_id\x18\x01 \x01(\t\x12\x11\n\tdriver_id\x18\x02 \x01(\t\x12\x12\n\nvehicle_id\x18\x03 \x01(\t\x12\x16\n\x0eorigin_node_id\x18\x04 \x01(\x03\x12\x1b\n\x13\x64\x65stination_node_id\x18\x05 \x01(\x03\x12\x1b\n\x13\x64\x65parture_time_unix\x18\x06 \x01(\x03\x12\x1c\n\x14\x65stimated_duration_s\x18\x07 \x01(\x05\x12&\n\x06status\x18\x08 \x01(\x0e\x32\x16.booking.BookingStatus\x12\x19\n\x11jurisdiction_code\x18\t \x01(\t\x12\x10\n\x08route_id\x18\n \x01(\t\x12\x17\n\x0f\x63reated_at_unix\x18\x0b \x01(\x03\x12\x17\n\x0f\x65xpires_at_unix\x18\x0c \x01(\x03\x12\x0f\n\x07version\x18\r \x01(\x05\"H\n\x14\x43\x61ncelBookingRequest\x12\x12\n\nbooking_id\x18\x01 \x01(\t\x12\x1c\n\x14requesting_driver_id\x18\x02 \x01(\t\"j\n\x15\x43\x61ncelBookingResponse\x12,\n\x07\x62ooking\x18\x01 \x01(\x0b\x32\x1b.booking.GetBookingResponse\x12\x12\n\nerror_code\x18\x02 \x01(\t\x12\x0f\n\x07message\x18\x03 \x01(\t*n\n\rBookingStatus\x12\x0b\n\x07PENDING\x10\x00\x12\r\n\tCONFIRMED\x10\x01\x12\n\n\x06\x41\x43TIVE\x10\x02\x12\r\n\tCOMPLETED\x10\x03\x12\r\n\tCANCELLED\x10\x04\x12\n\n\x06\x44\x45NIED\x10\x05\x12\x0b\n\x07\x45XPIRED\x10\x06\x32\xac\x01\n\rClientManager\x12K\n\rSubmitBooking\x12\x1d.booking.CreateBookingRequest\x1a\x1b.booking.GetBookingResponse\x12N\n\rCancelBooking\x12\x1d.booking.CancelBookingRequest\x1a\x1e.booking.CancelBookingResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rbooking.proto\x12\x07\x62ooking\"\xc8\x01\n\x14\x43reateBookingRequest\x12\x11\n\tdriver_id\x18\x01 \x01(\t\x12\x12\n\nvehicle_id\x18\x02 \x01(\t\x12\x16\n\x0eorigin_node_id\x18\x03 \x01(\x03\x12\x1b\n\x13\x64\x65stination_node_id\x18\x04 \x01(\x03\x12\x1b\n\x13\x64\x65parture_time_unix\x18\x05 \x01(\x03\x12\x1c\n\x14\x65stimated_duration_s\x18\x06 \x01(\x05\x12\x19\n\x11jurisdiction_code\x18\x07 \x01(\t\"\xd7\x02\n\x12GetBookingResponse\x12\x12\n\nbooking_id\x18\x01 \x01(\t\x12\x11\n\tdriver_id\x18\x02 \x01(\t\x12\x12\n\nvehicle_id\x18\x03 \x01(\t\x12\x16\n\x0eorigin_node_id\x18\x04 \x01(\x03\x12\x1b\n\x13\x64\x65stination_node_id\x18\x05 \x01(\x03\x12\x1b\n\x13\x64\x65parture_time_unix\x18\x06 \x01(\x03\x12\x1c\n\x14\x65stimated_duration_s\x18\x07 \x01(\x05\x12&\n\x06status\x18\x08 \x01(\x0e\x32\x16.booking.BookingStatus\x12\x19\n\x11jurisdiction_code\x18\t \x01(\t\x12\x10\n\x08route_id\x18\n \x01(\t\x12\x17\n\x0f\x63reated_at_unix\x18\x0b \x01(\x03\x12\x17\n\x0f\x65xpires_at_unix\x18\x0c \x01(\x03\x12\x0f\n\x07version\x18\r \x01(\x05\"H\n\x14\x43\x61ncelBookingRequest\x12\x12\n\nbooking_id\x18\x01 \x01(\t\x12\x1c\n\x14requesting_driver_id\x18\x02 \x01(\t\"j\n\x15\x43\x61ncelBookingResponse\x12,\n\x07\x62ooking\x18\x01 \x01(\x0b\x32\x1b.booking.GetBookingResponse\x12\x12\n\nerror_code\x18\x02 \x01(\t\x12\x0f\n\x07message\x18\x03 \x01(\t\"/\n\x19GetVehicleBookingsRequest\x12\x12\n\nvehicle_id\x18\x01 \x01(\t\"K\n\x1aGetVehicleBookingsResponse\x12-\n\x08\x62ookings\x18\x01 \x03(\x0b\x32\x1b.booking.GetBookingResponse*n\n\rBookingStatus\x12\x0b\n\x07PENDING\x10\x00\x12\r\n\tCONFIRMED\x10\x01\x12\n\n\x06\x41\x43TIVE\x10\x02\x12\r\n\tCOMPLETED\x10\x03\x12\r\n\tCANCELLED\x10\x04\x12\n\n\x06\x44\x45NIED\x10\x05\x12\x0b\n\x07\x45XPIRED\x10\x06\x32\x8b\x02\n\rClientManager\x12K\n\rSubmitBooking\x12\x1d.booking.CreateBookingRequest\x1a\x1b.booking.GetBookingResponse\x12N\n\rCancelBooking\x12\x1d.booking.CancelBookingRequest\x1a\x1e.booking.CancelBookingResponse\x12]\n\x12GetVehicleBookings\x12\".booking.GetVehicleBookingsRequest\x1a#.booking.GetVehicleBookingsResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'booking_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_BOOKINGSTATUS']._serialized_start=757
-  _globals['_BOOKINGSTATUS']._serialized_end=867
+  _globals['_BOOKINGSTATUS']._serialized_start=883
+  _globals['_BOOKINGSTATUS']._serialized_end=993
   _globals['_CREATEBOOKINGREQUEST']._serialized_start=27
   _globals['_CREATEBOOKINGREQUEST']._serialized_end=227
   _globals['_GETBOOKINGRESPONSE']._serialized_start=230
@@ -41,6 +41,10 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_CANCELBOOKINGREQUEST']._serialized_end=647
   _globals['_CANCELBOOKINGRESPONSE']._serialized_start=649
   _globals['_CANCELBOOKINGRESPONSE']._serialized_end=755
-  _globals['_CLIENTMANAGER']._serialized_start=870
-  _globals['_CLIENTMANAGER']._serialized_end=1042
+  _globals['_GETVEHICLEBOOKINGSREQUEST']._serialized_start=757
+  _globals['_GETVEHICLEBOOKINGSREQUEST']._serialized_end=804
+  _globals['_GETVEHICLEBOOKINGSRESPONSE']._serialized_start=806
+  _globals['_GETVEHICLEBOOKINGSRESPONSE']._serialized_end=881
+  _globals['_CLIENTMANAGER']._serialized_start=996
+  _globals['_CLIENTMANAGER']._serialized_end=1263
 # @@protoc_insertion_point(module_scope)

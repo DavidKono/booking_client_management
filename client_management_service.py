@@ -114,6 +114,43 @@ class ClientManagerServicer(booking_pb2_grpc.ClientManagerServicer):
                 error_code="UNAVAILABLE",
                 message=f"Failed to contact Scheduler at {SCHEDULER_ADDR}: {e.details() or str(e)}",
             )
+        
+    def GetVehicleBookings(self, request, context):
+        try:
+            with grpc.insecure_channel(SCHEDULER_ADDR) as channel:
+                scheduler_stub = scheduler_pb2_grpc.SchedulerServiceStub(channel)
+
+                scheduler_response = scheduler_stub.GetVehicleBookings(
+                    scheduler_pb2.GetVehicleBookingsRequest(
+                        vehicle_id=request.vehicle_id
+                    )
+                )
+
+                return booking_pb2.GetVehicleBookingsResponse(
+                    bookings=[
+                        booking_pb2.GetBookingResponse(
+                            booking_id=b.booking_id,
+                            driver_id=b.driver_id,
+                            vehicle_id=b.vehicle_id,
+                            origin_node_id=b.origin_node_id,
+                            destination_node_id=b.destination_node_id,
+                            departure_time_unix=b.departure_time_unix,
+                            estimated_duration_s=b.estimated_duration_s,
+                            status=b.status,
+                            jurisdiction_code=b.jurisdiction_code,
+                            route_id=b.route_id,
+                            created_at_unix=b.created_at_unix,
+                            expires_at_unix=b.expires_at_unix,
+                            version=b.version,
+                        )
+                        for b in scheduler_response.bookings
+                    ]
+                )
+
+        except grpc.RpcError as e:
+            context.set_code(e.code())
+            context.set_details(e.details())
+            return booking_pb2.GetVehicleBookingsResponse(bookings=[])
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

@@ -44,6 +44,11 @@ class ClientManagerStub(object):
                 request_serializer=booking__pb2.CancelBookingRequest.SerializeToString,
                 response_deserializer=booking__pb2.CancelBookingResponse.FromString,
                 _registered_method=True)
+        self.GetVehicleBookings = channel.unary_unary(
+                '/booking.ClientManager/GetVehicleBookings',
+                request_serializer=booking__pb2.GetVehicleBookingsRequest.SerializeToString,
+                response_deserializer=booking__pb2.GetVehicleBookingsResponse.FromString,
+                _registered_method=True)
 
 
 class ClientManagerServicer(object):
@@ -61,6 +66,12 @@ class ClientManagerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetVehicleBookings(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_ClientManagerServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -73,6 +84,11 @@ def add_ClientManagerServicer_to_server(servicer, server):
                     servicer.CancelBooking,
                     request_deserializer=booking__pb2.CancelBookingRequest.FromString,
                     response_serializer=booking__pb2.CancelBookingResponse.SerializeToString,
+            ),
+            'GetVehicleBookings': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetVehicleBookings,
+                    request_deserializer=booking__pb2.GetVehicleBookingsRequest.FromString,
+                    response_serializer=booking__pb2.GetVehicleBookingsResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -129,6 +145,33 @@ class ClientManager(object):
             '/booking.ClientManager/CancelBooking',
             booking__pb2.CancelBookingRequest.SerializeToString,
             booking__pb2.CancelBookingResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetVehicleBookings(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/booking.ClientManager/GetVehicleBookings',
+            booking__pb2.GetVehicleBookingsRequest.SerializeToString,
+            booking__pb2.GetVehicleBookingsResponse.FromString,
             options,
             channel_credentials,
             insecure,
