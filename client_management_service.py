@@ -53,6 +53,67 @@ class ClientManagerServicer(booking_pb2_grpc.ClientManagerServicer):
                 expires_at_unix=0,
                 version=1,
             )
+    def CancelBooking(self, request, context):
+        try:
+            with grpc.insecure_channel(SCHEDULER_ADDR) as channel:
+                scheduler_stub = scheduler_pb2_grpc.SchedulerServiceStub(channel)
+
+                scheduler_response = scheduler_stub.CancelBooking(
+                    scheduler_pb2.CancelBookingRequest(
+                        booking_id=request.booking_id,
+                        requesting_driver_id=request.requesting_driver_id,
+                    )
+                )
+
+                booking = scheduler_response.booking
+
+                return booking_pb2.CancelBookingResponse(
+                    booking=booking_pb2.GetBookingResponse(
+                        booking_id=booking.booking_id,
+                        driver_id=booking.driver_id,
+                        vehicle_id=booking.vehicle_id,
+                        origin_node_id=booking.origin_node_id,
+                        destination_node_id=booking.destination_node_id,
+                        departure_time_unix=booking.departure_time_unix,
+                        estimated_duration_s=booking.estimated_duration_s,
+                        status=booking.status,
+                        jurisdiction_code=booking.jurisdiction_code,
+                        route_id=booking.route_id,
+                        created_at_unix=booking.created_at_unix,
+                        expires_at_unix=booking.expires_at_unix,
+                        version=booking.version,
+                    ),
+                    error_code=scheduler_response.error_code,
+                    message=scheduler_response.message,
+                )
+
+        except grpc.RpcError as e:
+            context.set_code(grpc.StatusCode.UNAVAILABLE)
+            context.set_details(
+                f"Failed to contact Scheduler at {SCHEDULER_ADDR}: {e.details() or str(e)}"
+            )
+
+            now_unix = int(time.time())
+
+            return booking_pb2.CancelBookingResponse(
+                booking=booking_pb2.GetBookingResponse(
+                    booking_id=request.booking_id,
+                    driver_id="",
+                    vehicle_id="",
+                    origin_node_id=0,
+                    destination_node_id=0,
+                    departure_time_unix=0,
+                    estimated_duration_s=0,
+                    status=booking_pb2.DENIED,
+                    jurisdiction_code="",
+                    route_id="",
+                    created_at_unix=now_unix,
+                    expires_at_unix=0,
+                    version=0,
+                ),
+                error_code="UNAVAILABLE",
+                message=f"Failed to contact Scheduler at {SCHEDULER_ADDR}: {e.details() or str(e)}",
+            )
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

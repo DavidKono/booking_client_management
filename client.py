@@ -24,6 +24,9 @@ class BookingInput(BaseModel):
     estimated_duration_s: int
     jurisdiction_code: str
 
+class CancelBookingInput(BaseModel):
+    driver_id: str
+    booking_id: str
 
 @app.get("/")
 def serve_index():
@@ -99,7 +102,77 @@ def submit_booking(data: BookingInput):
             "version": 0,
             "message": f"Unexpected error: {e}",
         }
+    
+# @app.post("/cancel-booking")
+# def cancel_booking(data: CancelBookingInput):
+#     try:
+#         with grpc.insecure_channel(GRPC_SERVER_ADDRESS) as channel:
+#             stub = booking_pb2_grpc.ClientManagerStub(channel)
 
+#             response = stub.CancelBooking(
+#                 booking_pb2.CancelBookingRequest(
+#                     booking_id=data.booking_id,
+#                     requesting_driver_id=data.booking_id,
+#                 )
+#             )
+
+#         return {
+#             "booking": response.booking,
+#             "error_code": response.error_code,
+#             "message": response.message,
+#         }
+#     except Exception as e:
+#         return {
+
+#         }
+@app.post("/cancel-booking")
+def cancel_booking(data: CancelBookingInput):
+    try:
+        with grpc.insecure_channel(GRPC_SERVER_ADDRESS) as channel:
+            stub = booking_pb2_grpc.ClientManagerStub(channel)
+
+            response = stub.CancelBooking(
+                booking_pb2.CancelBookingRequest(
+                    booking_id=data.booking_id,
+                    requesting_driver_id=data.driver_id,
+                )
+            )
+
+        booking = response.booking
+
+        return {
+            "booking_id": booking.booking_id,
+            "driver_id": booking.driver_id,
+            "vehicle_id": booking.vehicle_id,
+            "origin_node_id": booking.origin_node_id,
+            "destination_node_id": booking.destination_node_id,
+            "departure_time_unix": booking.departure_time_unix,
+            "estimated_duration_s": booking.estimated_duration_s,
+            "status": booking_pb2.BookingStatus.Name(booking.status),
+            "jurisdiction_code": booking.jurisdiction_code,
+            "route_id": booking.route_id,
+            "created_at_unix": booking.created_at_unix,
+            "expires_at_unix": booking.expires_at_unix,
+            "version": booking.version,
+            "error_code": response.error_code,
+            "message": response.message,
+        }
+
+    except grpc.RpcError as e:
+        return {
+            "booking_id": data.booking_id,
+            "driver_id": data.driver_id,
+            "status": "ERROR",
+            "message": f"gRPC error: {e}",
+        }
+
+    except Exception as e:
+        return {
+            "booking_id": data.booking_id,
+            "driver_id": data.driver_id,
+            "status": "ERROR",
+            "message": f"Unexpected error: {e}",
+        }
 
 def open_browser():
     time.sleep(1)

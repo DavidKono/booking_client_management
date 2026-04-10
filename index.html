@@ -74,18 +74,35 @@
     <button type="submit">Submit Booking</button>
   </form>
 
-  <div id="result" class="result"></div>
+  <div id="bookingResult" class="result"></div>
+
+  <form id="cancelForm">
+    <label>
+      Driver ID
+      <input type="text" id="cancel_driver_id" name="driver_id" value="A" required />
+    </label>
+   <label>
+      Booking ID
+      <input type="text" id="cancel_booking_id" name="booking_id" value="A" required />
+    </label>
+
+    <button type="submit">Cancel Booking</button>
+  </form>
+
+  <div id="cancelResult" class="result"></div>
 
   <script>
-    const form = document.getElementById("bookingForm");
-    const resultDiv = document.getElementById("result");
+    const bookingForm = document.getElementById("bookingForm");
+    const cancelForm = document.getElementById("cancelForm");
+    const bookingResultDiv = document.getElementById("bookingResult");
+    const cancelResultDiv = document.getElementById("cancelResult");
 
     function formatUnix(ts) {
       if (!ts) return "";
       return new Date(ts * 1000).toLocaleString();
     }
 
-    form.addEventListener("submit", async (event) => {
+    bookingForm.addEventListener("submit", async (event) => {
       event.preventDefault();
 
       const payload = {
@@ -98,9 +115,9 @@
         jurisdiction_code: document.getElementById("jurisdiction_code").value
       };
 
-      resultDiv.style.display = "block";
-      resultDiv.className = "result";
-      resultDiv.textContent = "Submitting...";
+      bookingResultDiv.style.display = "block";
+      bookingResultDiv.className = "result";
+      bookingResultDiv.textContent = "Submitting...";
 
       try {
         const response = await fetch("http://127.0.0.1:8000/submit-booking", {
@@ -114,8 +131,8 @@
         const data = await response.json();
 
         if (!response.ok || data.status === "ERROR") {
-          resultDiv.className = "result error";
-          resultDiv.textContent =
+          bookingResultDiv.className = "result error";
+          bookingResultDiv.textContent =
             `Request failed\n` +
             `Booking ID: ${data.booking_id || ""}\n` +
             `Driver ID: ${data.driver_id || ""}\n` +
@@ -125,8 +142,8 @@
           return;
         }
 
-        resultDiv.className = "result success";
-        resultDiv.textContent =
+        bookingResultDiv.className = "result success";
+        bookingResultDiv.textContent =
           `Status: ${data.status}\n` +
           `Booking ID: ${data.booking_id}\n` +
           `Driver ID: ${data.driver_id}\n` +
@@ -144,10 +161,55 @@
           `Expires At (Local): ${formatUnix(data.expires_at_unix)}\n` +
           `Version: ${data.version}`;
       } catch (error) {
-        resultDiv.className = "result error";
-        resultDiv.textContent = `Request failed: ${error}`;
+        bookingResultDiv.className = "result error";
+        bookingResultDiv.textContent = `Booking Request failed: ${error}`;
       }
     });
+
+    cancelForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const payload = {
+        driver_id: document.getElementById("cancel_driver_id").value,
+        booking_id: document.getElementById("cancel_booking_id").value,
+      };
+
+      cancelResultDiv.style.display = "block";
+      cancelResultDiv.className = "result";
+      cancelResultDiv.textContent = "Submitting...";
+
+      try {
+        const response = await fetch("http://127.0.0.1:8000/cancel-booking", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        console.log(data.status)
+        console.log(data)
+        
+        if (!response.ok || data.status === "ERROR") {
+          cancelResultDiv.className = "result error";
+          cancelResultDiv.textContent =
+            `Request failed\n` +
+            `Booking ID: ${data.booking_id || ""}\n` +
+            `Driver ID: ${data.driver_id || ""}\n` +
+            `Message: ${data.message || ""}\n`;
+          return;
+        }
+        cancelResultDiv.className = "result success";
+        cancelResultDiv.textContent =
+          `Status: ${data.status}\n` +
+          `Booking ID: ${data.booking_id}\n` +
+          `Driver ID: ${data.driver_id}\n`;
+      } catch (error) {
+        cancelResultDiv.className = "result error";
+        cancelResultDiv.textContent = `Cancel request failed: ${error}`;
+      }
+    });
+  
   </script>
 </body>
 </html>

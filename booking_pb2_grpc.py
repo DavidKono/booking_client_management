@@ -39,12 +39,23 @@ class ClientManagerStub(object):
                 request_serializer=booking__pb2.CreateBookingRequest.SerializeToString,
                 response_deserializer=booking__pb2.GetBookingResponse.FromString,
                 _registered_method=True)
+        self.CancelBooking = channel.unary_unary(
+                '/booking.ClientManager/CancelBooking',
+                request_serializer=booking__pb2.CancelBookingRequest.SerializeToString,
+                response_deserializer=booking__pb2.CancelBookingResponse.FromString,
+                _registered_method=True)
 
 
 class ClientManagerServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def SubmitBooking(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CancelBooking(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -57,6 +68,11 @@ def add_ClientManagerServicer_to_server(servicer, server):
                     servicer.SubmitBooking,
                     request_deserializer=booking__pb2.CreateBookingRequest.FromString,
                     response_serializer=booking__pb2.GetBookingResponse.SerializeToString,
+            ),
+            'CancelBooking': grpc.unary_unary_rpc_method_handler(
+                    servicer.CancelBooking,
+                    request_deserializer=booking__pb2.CancelBookingRequest.FromString,
+                    response_serializer=booking__pb2.CancelBookingResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -86,6 +102,33 @@ class ClientManager(object):
             '/booking.ClientManager/SubmitBooking',
             booking__pb2.CreateBookingRequest.SerializeToString,
             booking__pb2.GetBookingResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def CancelBooking(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/booking.ClientManager/CancelBooking',
+            booking__pb2.CancelBookingRequest.SerializeToString,
+            booking__pb2.CancelBookingResponse.FromString,
             options,
             channel_credentials,
             insecure,

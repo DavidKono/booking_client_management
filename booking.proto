@@ -3,6 +3,7 @@ package booking;
 
 service ClientManager {
   rpc SubmitBooking (CreateBookingRequest) returns (GetBookingResponse);
+  rpc CancelBooking (CancelBookingRequest) returns (CancelBookingResponse);
 }
 
 message CreateBookingRequest {
@@ -39,4 +40,15 @@ message GetBookingResponse {
   int64    created_at_unix      = 11;
   int64    expires_at_unix      = 12;
   int32    version              = 13;
+}
+
+message CancelBookingRequest {
+  string booking_id          = 1;
+  string requesting_driver_id = 2;
+}
+
+message CancelBookingResponse {
+  GetBookingResponse booking    = 1;
+  string          error_code = 2;
+  string          message    = 3;
 }
